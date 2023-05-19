@@ -3,7 +3,7 @@ Name: IDENTIFIER                     Value: p
 Name: SEPARATOR_semicolon            Value: ;
 Name: IDENTIFIER                     Value: var
 Name: IDENTIFIER                     Value: x
-Name: ERROR_invalid_character        Value: @
+(At line 2) => ERROR: Invalid char '@'
 Name: SEPARATOR_colon                Value: :
 Name: KEYWORD_integer                Value: integer
 Name: SEPARATOR_semicolon            Value: ;
