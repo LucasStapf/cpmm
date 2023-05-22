@@ -1,4 +1,4 @@
-use std::fmt::{Debug, Display, Formatter, write};
+use std::fmt::{Debug, Display, Formatter};
 
 pub enum ValueType {
     Word,
@@ -13,7 +13,6 @@ pub enum TokenName {
     Separator(SeparatorType),
     Operator(OperatorType),
     Literal(LiteralType),
-    Error(String),
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -81,7 +80,7 @@ pub enum OperatorType {
 pub enum LiteralType {
     Integer,
     Real,
-    InvalidFormat,
+    // InvalidFormat,
 }
 
 impl<'a> Display for Token<'a> {
@@ -90,12 +89,7 @@ impl<'a> Display for Token<'a> {
         write!(f, "Name: {:<30} Value: {}", n, self.value)
     }
 }
-//
-// impl<'a> ToString for Token<'a> {
-//     fn to_string(&self) -> String {
-//         format!("Name: {} Value: {}", self.name, self.value)
-//     }
-// }
+
 impl Display for TokenName {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -104,8 +98,7 @@ impl Display for TokenName {
             TokenName::Separator(sp) => write!(f, "SEPARATOR_{}", sp.to_string()),
             TokenName::Operator(op) => write!(f, "OPERATOR_{}", op.to_string()),
             TokenName::Literal(li) => write!(f, "LITERAL_{}", li.to_string()),
-            TokenName::Error(str) => write!(f, "ERROR_{}", str),
-            _ => write!(f, "Not implemented!"),
+            // &_ => write!(f, "Not implemented!"),
         }
     }
 }
@@ -117,7 +110,7 @@ impl KeywordType {
             v if v == KeywordType::Begin.to_string() => Some(KeywordType::Begin),
             v if v == KeywordType::End.to_string() => Some(KeywordType::End),
             v if v == KeywordType::Const.to_string() => Some(KeywordType::Const),
-            v if v == KeywordType::Program.to_string() => Some(KeywordType::Program),
+            v if v == KeywordType::Var.to_string() => Some(KeywordType::Var),
             v if v == KeywordType::Procedure.to_string() => Some(KeywordType::Procedure),
             v if v == KeywordType::Else.to_string() => Some(KeywordType::Else),
             v if v == KeywordType::Read.to_string() => Some(KeywordType::Read),
@@ -135,6 +128,7 @@ impl KeywordType {
     }
 }
 
+#[allow(unreachable_patterns)]
 impl Display for KeywordType {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -142,7 +136,7 @@ impl Display for KeywordType {
             KeywordType::Begin => write!(f, "begin"),
             KeywordType::End => write!(f, "end"),
             KeywordType::Const => write!(f, "const"),
-            KeywordType::Program => write!(f, "program"),
+            KeywordType::Var => write!(f, "var"),
             KeywordType::Procedure => write!(f, "procedure"),
             KeywordType::Else => write!(f, "else"),
             KeywordType::Read => write!(f, "read"),
@@ -174,6 +168,7 @@ impl SeparatorType {
     }
 }
 
+#[allow(unreachable_patterns)]
 impl Display for SeparatorType {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -207,6 +202,7 @@ impl OperatorType {
     }
 }
 
+#[allow(unreachable_patterns)]
 impl Display for OperatorType {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
@@ -226,12 +222,13 @@ impl Display for OperatorType {
     }
 }
 
+#[allow(unreachable_patterns)]
 impl Display for LiteralType {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
             LiteralType::Integer => write!(f, "integer"),
             LiteralType::Real => write!(f, "real"),
-            LiteralType::InvalidFormat => write!(f, "invalid_number_format"),
+            // LiteralType::InvalidFormat => write!(f, "invalid_number_format"),
             _ => write!(f, "Not implemented!"),
         }
     }

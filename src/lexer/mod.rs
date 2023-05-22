@@ -1,8 +1,6 @@
-#![allow(unused)]
-
 use crate::lexer::token::*;
 use crate::lexer::OperatorType;
-use crate::lexer::token::TokenName::{Identifier, Keyword, Operator, Separator};
+use crate::lexer::token::TokenName::{Operator, Separator};
 
 mod token;
 
