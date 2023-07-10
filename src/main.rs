@@ -2,6 +2,7 @@ use std::env;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use crate::lexer::Lexer;
+use crate::lexer::token::TokenName::Invalid;
 
 mod lexer;
 
@@ -22,10 +23,18 @@ fn main() -> std::io::Result<()> {
                 let string = input.as_str();
                 let mut lex = Lexer::new(string);
                 loop {
-                    match lex.next_token() {
-                        Ok(token) => write!(fout, "{}\n", token).expect("Could not write to file!"),
-                        Err(msg) => write!(fout, "(At line {}) => ERROR: {}\n", lex.current_line(), msg).expect("Could not write to file!"),
+
+                    let line = lex.current_line();
+                    let token = lex.next_token();
+                    if token.name != Invalid {
+                        write!(fout, "{}\n", token).expect("Could not write to file!")
+                    } else {
+                        write!(fout, "(At line {}) => ERROR: {}\n", line, token.value).expect("Could not write to file!")
                     }
+                    // match lex.next_token() {
+                    //     Err(msg) => write!(fout, "(At line {}) => ERROR: {}\n", lex.current_line(), msg).expect("Could not write to file!"),
+                    //     Ok(token) => write!(fout, "{}\n", token).expect("Could not write to file!"),
+                    // }
                     if lex.string_is_empty() {
                         break;
                     }

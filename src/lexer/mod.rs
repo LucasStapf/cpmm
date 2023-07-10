@@ -1,8 +1,8 @@
 use crate::lexer::token::*;
 use crate::lexer::OperatorType;
-use crate::lexer::token::TokenName::{Operator, Separator};
+use crate::lexer::token::TokenName::{Invalid, Operator, Separator};
 
-mod token;
+pub mod token;
 
 pub struct Lexer<'a> {
     string: &'a str,
@@ -59,69 +59,69 @@ impl<'a> Lexer<'a> {
         }
     }
 
-    fn next_character(&mut self) -> Result<Token, String> {
+    fn next_character(&mut self) -> Token {
         if self.string.len() >= 2 {
             if let Some(op) = OperatorType::is_operator(&self.string[..2]) {
                 let token = Token::new(Operator(op), &self.string[..2]);
                 self.string = &self.string[2..];
-                return Ok(token);
+                return token
             }
         }
 
         return if let Some(op) = OperatorType::is_operator(&self.string[..1]) {
             let token = Token::new(Operator(op), &self.string[..1]);
             self.string = &self.string[1..];
-            Ok(token)
+            token
         } else if let Some(sp) = SeparatorType::is_separator(&self.string[..1]) {
             let token = Token::new(Separator(sp), &self.string[..1]);
             self.string = &self.string[1..];
-            Ok(token)
+            token
         } else {
-            let ret = format!("Invalid character '{}'", &self.string[..1]);
+            let token = Token::new(Invalid, &self.string[..1]);
             self.string = &self.string[1..];
-            Err(ret)
+            token
         }
     }
 
-    fn next_number(&mut self) -> Result<Token, String> {
+    fn next_number(&mut self) -> Token {
         let mut i_dp = 0; // index of decimal pointer - if 0, there is no dp.
         for (i, c) in self.string.char_indices() {
             if !c.is_numeric() {
                 if i_dp != 0 {
                     return if i_dp + 1 == i {
-                        let ret = format!("Invalid format number {}", &self.string[0..i]);
+                        let token = Token::new(Invalid, &self.string[0..i]);
                         self.string = &self.string[i..];
-                        Err(ret)
+                        token
                     } else {
-                        let ret = Token::new(TokenName::Literal(LiteralType::Real), &self.string[0..i]);
+                        let token = Token::new(TokenName::Literal(LiteralType::Real), &self.string[0..i]);
                         self.string = &self.string[i..];
-                        Ok(ret)
+                        token
                     }
                 } else {
                     if c == '.' {
                         i_dp = i;
                     } else {
-                        let ret = Token::new(TokenName::Literal(LiteralType::Integer), &self.string[0..i]);
+                        let token = Token::new(TokenName::Literal(LiteralType::Integer), &self.string[0..i]);
                         self.string = &self.string[i..];
-                        return Ok(ret);
+                        return token
                     }
                 }
             }
         }
 
         if i_dp == 0 {
-            Ok(Token::new(TokenName::Literal(LiteralType::Integer), &self.string))
+            Token::new(TokenName::Literal(LiteralType::Integer), &self.string)
         } else {
             if i_dp + 1 == self.string.len() {
-                let ret = format!("Invalid format number {}", &self.string);
-                Err(ret)
+                let token = Token::new(Invalid, &self.string);
+                token
             } else {
-                Ok(Token::new(TokenName::Literal(LiteralType::Real), &self.string))
+                Token::new(TokenName::Literal(LiteralType::Real), &self.string)
             }
         }
     }
 
-    fn next_word(&mut self) -> Result<Token, String> {
+    fn next_word(&mut self) -> Token {
         let mut index = 0;
         for (i, _) in self.string.match_indices(|c: char| c.is_whitespace() || c.is_ascii_punctuation()) {
             index = i;
@@ -131,11 +131,11 @@ impl<'a> Lexer<'a> {
         return if let Some(kw) = KeywordType::is_keyword(&self.string[..index]) {
             let token = Token::new(TokenName::Keyword(kw), &self.string[..index]);
             self.string = &self.string[index..];
-            Ok(token)
+            token
         } else {
             let token = Token::new(TokenName::Identifier, &self.string[..index]);
             self.string = &self.string[index..];
-            Ok(token)
+            token
         }
     }
 
@@ -147,7 +147,7 @@ impl<'a> Lexer<'a> {
         self.string.is_empty()
     }
 
-    pub fn next_token(&mut self) -> Result<Token, String> {
+    pub fn next_token(&mut self) -> Token {
         while self.string.starts_with('{') || self.string.starts_with(char::is_whitespace) {
             self.consume_left_whitespaces();
             self.consume_comments();

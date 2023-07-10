@@ -8,6 +8,7 @@ pub enum ValueType {
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum TokenName {
+    Invalid,
     Identifier,
     Keyword(KeywordType),
     Separator(SeparatorType),
@@ -93,6 +94,7 @@ impl<'a> Display for Token<'a> {
 impl Display for TokenName {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         match self {
+            TokenName::Invalid => write!(f, "INVALID"),
             TokenName::Identifier => write!(f, "IDENTIFIER"),
             TokenName::Keyword(kw) => write!(f, "KEYWORD_{}", kw.to_string()),
             TokenName::Separator(sp) => write!(f, "SEPARATOR_{}", sp.to_string()),
